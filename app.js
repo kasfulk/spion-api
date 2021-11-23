@@ -18,6 +18,6 @@ app.use(express.json());
 app.use('/no-auth',noAuthRoute);
 app.use('/',jwtProtector,appRoute);
 
-app.listen(3000, () => {
+app.listen(process.env.JWT_SECRET.PORT, () => {
   console.log('Server Berjalan pada port : 3000');
 });
