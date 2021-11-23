@@ -1,8 +1,9 @@
 import express from 'express';
-import { auth } from '../handlers/index.js';
+import routerAuth from './route-auth.js';
+import authController from '../handlers/auth/auth.controller.js';
 
 const router = express.Router();
 
-router.post('/check-payload', auth.checkPayload);
+router.use('/user', routerAuth);
 
 export default router;
