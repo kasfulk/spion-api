@@ -8,7 +8,7 @@ const indexPage = (req, res) => {
 
 const login = (req, res) => {
     const { username, password } = req.body;
-    authService.login(username,password,res);
+    authService.login( username, password, res);
 }
 
 const checkPayload = (req, res) => {
@@ -22,11 +22,15 @@ const checkPayload = (req, res) => {
             message: "user tidak ditemukan"
         });
     }
-};          
+};
 
+const getUser = (req, res) => {
+    authService.getUser(req, res);
+};
 
 export default { 
     indexPage,
     login,
     checkPayload,
+    getUser,
 };

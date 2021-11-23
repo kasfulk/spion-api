@@ -9,7 +9,7 @@ dotenv.config({ path: '.env' });
 const app = express();
 const jwtProtector = mJwt({
     secret: process.env.JWT_SECRET,
-    algorithms: ['HS256']
+    algorithms: ['HS256'],  
 })
 
 app.use(cors());

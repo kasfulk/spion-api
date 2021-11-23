@@ -25,14 +25,23 @@ const login = async (username, password, res) => {
             });
         }
     } else {
-        res.send({
+        res.status(401).send({
             message: "gagal",
         });
     }
 };
 
-
+const getUser = async (req, res) => {
+    const { user } = req;
+    const query = `SELECT username,role,name FROM users WHERE id = ?`;
+    const [result,field] = await pool.query(query,[user.id]);
+    res.status(200).json({
+        message: 'Get User Success',
+        result: result[0]
+    });
+};
 
 export default {
-    login
+    login,
+    getUser,
 }
