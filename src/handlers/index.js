@@ -1,5 +1,5 @@
-import bangunan from './bangunan/bangunan.controller.js';
+import auth from './auth/auth.controller.js';
 
 export {
-  bangunan,
+  auth,
 };

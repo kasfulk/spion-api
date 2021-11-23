@@ -1,8 +1,8 @@
 import express from 'express';
-import { botWa } from '../controllers/index.js';
+import { auth } from '../handlers/index.js';
 
 const router = express.Router();
 
-router.get('/bot-wa/', botWa.indexPage);
+router.post('/login', auth.login);
 
 export default router;
