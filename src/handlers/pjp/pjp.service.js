@@ -16,7 +16,10 @@ const getPJPDuration = async (req, res) => {
     const params = [user.id, day];
     try {
         const [result,metadata] = await pool.query(query, params);
-        res.status(200).json(result[0]);
+        res.status(200).json(result[0].map(({ pjp_duration, total_outlets }) => ({
+            pjp_duration: Number(pjp_duration),
+            total_outlets
+        })));
     }
     catch (err) {
         res.status(500).json(err);
