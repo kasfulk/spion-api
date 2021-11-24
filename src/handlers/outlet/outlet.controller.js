@@ -14,9 +14,13 @@ const getOutletCheckInService = (req, res) => {
     outletService.getOutletCheckInService(req, res);
 };
 
+const outletCheckAction = (req, res) => {
+    outletService.outletCheckAction(req, res);
+};
   
 export default { 
     indexPage,
     getDayService,
     getOutletCheckInService,
+    outletCheckAction,
 };

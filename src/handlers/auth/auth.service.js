@@ -13,7 +13,7 @@ const login = async (username, password, res) => {
                 id: result[0].id,
                 username: result[0].sf_username,
                 email: result[0].sf_name,
-                role: result[0].tap
+                tap: result[0].tap
             }, process.env.JWT_SECRET, { expiresIn: '9h' });
             res.status(200).json({
                 message: 'Login Success',

@@ -99,6 +99,47 @@ const getOutletCheckInService = async (req, res) => {
         });
     }
 }
+
+const outletCheckAction = async (req, res) => {
+    const { action, outlet_id, longitude, latitude } = req.body;
+    const { user } = req;
+    const allowedActions = ['in', 'out'];
+    const params = [outlet_id, user.id, longitude, latitude];
+    
+    if (!allowedActions.includes(action)) res.status(400).json({ message: "Invalid action" });
+    if (!outlet_id) res.status(400).json({ message: "Missing required parameters" });
+
+    const queryCheck = `
+            SELECT * FROM pjp_check_${action} 
+            WHERE outlet_id = ? 
+            AND sf_id = ? 
+            AND DATE( date ) = DATE(NOW())`
+    
+    const [results, metadata] = await pool.query(queryCheck, params);
+    if (results.length == 0) {
+        
+        if (action == 'out') {
+            const queryCheckIn = `SELECT * FROM pjp_check_in WHERE outlet_id = ? AND sf_id = ? AND DATE( date ) = DATE(NOW())`;
+            const [resultsCheckIn, metadataCheckIn] = await pool.query(queryCheckIn, params);
+            if (resultsCheckIn.length == 0) {
+                res.status(400).json({ message: "Check in not found" });
+                return;
+            }
+        }
+
+        const insertQuery = `INSERT INTO pjp_check_${action} (outlet_id, sf_id, date, longitude, latitude) VALUES (?, ?, NOW(), ?, ?);
+                             SELECT * FROM pjp_check_${action} WHERE id = LAST_INSERT_ID()`; 
+        const [insertResult, insertMetadata] = await pool.query(insertQuery, params);
+        res.status(200).json({
+            message: `Checked ${action} successfully!`
+        });
+    } else {
+        res.status(400).json({
+            message: "You have already checked in/out today!"
+        });
+    }
+}
+
     
 
 
@@ -107,4 +148,5 @@ const getOutletCheckInService = async (req, res) => {
 export default {
     getDayService,
     getOutletCheckInService,
+    outletCheckAction,
 }
