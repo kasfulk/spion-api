@@ -6,7 +6,8 @@ const getPJPDuration = async (req, res) => {
     const day = getDay(new Date());
     
     const query = `SELECT
-                    ROUND(270/COUNT(OUTLET_ID),0) AS pjp_duration
+                    ROUND(270/COUNT(OUTLET_ID),0) AS pjp_duration,
+                    COUNT(OUTLET_ID) AS total_outlets
                     FROM
                     pjp_schedule
                     WHERE
