@@ -12,9 +12,9 @@ const getPJPDuration = async (req, res) => {
                     WHERE
                     sales_force_id = ? AND
                     day = ?`;
-    const params = [user.sales_force_id, day];
+    const params = [user.id, day];
     try {
-        const result = await pool.query(query, params);
+        const [result,metadata] = await pool.query(query, params);
         res.status(200).json(result);
     }
     catch (err) {
