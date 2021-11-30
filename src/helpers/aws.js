@@ -24,12 +24,31 @@ const upload = multer({
     key: function (req, file, cb) {
         const timestamp = Date.now();
         const { username } = req.user;
+        const extensionFile = file.originalname.split('.').pop();
+        const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        if (!allowedExtensions.includes(extensionFile)) { 
+            return cb(new Error('Invalid file extension'), null);
+        }
         cb(null, username + "_" + timestamp + "_" + file.originalname);
-    },
+      },
+      metadata: function (req, file, cb) {
+        const timestamp = Date.now();
+        const date = new Date(timestamp)
+              .toISOString()
+              .replace(/T/, ' ')
+              .replace(/\..+/, '');
+        cb(null, Object.assign({
+            uploader: req.user.username,
+            date: date,
+          }, req.query));
+      }
   }),
 }).single('file');
 
 
+
+
 export default {
     upload,
+    s3,
 }

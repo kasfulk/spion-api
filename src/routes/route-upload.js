@@ -5,6 +5,6 @@ import aws from '../helpers/aws.js';
 const router = express.Router();
 
 router.get('/', upload.indexPage);
-router.post('/', aws.upload, upload.uploadImage);
+router.post('/', upload.doUpload);
 
 export default router;
