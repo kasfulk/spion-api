@@ -5,11 +5,4 @@ export const tokenCheck = (req, res, next) => {
         secret: process.env.JWT_SECRET,
         algorithms: ['HS256'],
     })(req, res, next);
-    if (req.user) {
-        next();
-    } else {
-        res.status(401).send({
-            message: 'Unauthorized',
-        });
-    }
 }
