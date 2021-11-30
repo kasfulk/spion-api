@@ -23,7 +23,8 @@ const upload = multer({
     contentType: multerS3.AUTO_CONTENT_TYPE,
     key: function (req, file, cb) {
         const timestamp = Date.now();
-        cb(null, timestamp+ "_" +file.originalname);
+        const { username } = req.user;
+        cb(null, username + "_" + timestamp + "_" + file.originalname);
     },
   }),
 }).single('file');
