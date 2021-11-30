@@ -21,7 +21,6 @@ const upload = multer({
     bucket: 'itopkal',
     acl: 'public-read',
     contentType: multerS3.AUTO_CONTENT_TYPE,
-    contentEncoding: 'gzip',
     key: function (req, file, cb) {
         const timestamp = Date.now();
         cb(null, timestamp+ "_" +file.originalname);
