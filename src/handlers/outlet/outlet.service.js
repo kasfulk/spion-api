@@ -135,6 +135,7 @@ const outletCheckAction = async (req, res) => {
         });
     } else {
         res.status(400).json({
+            checked: true,
             message: "You have already checked in/out today!"
         });
     }
