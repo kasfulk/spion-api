@@ -10,7 +10,7 @@ AWS.config.update({
   secretAccessKey: process.env.SPACES_ACCESS_KEY,
 });
 
-const spacesEndpoint = new AWS.Endpoint('sgp1.digitaloceanspaces.com/spion-img');
+const spacesEndpoint = new AWS.Endpoint(process.env.SPACES_ENDPOINT);
 const s3 = new AWS.S3({
   endpoint: spacesEndpoint,
 });
