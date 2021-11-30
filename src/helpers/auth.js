@@ -4,8 +4,7 @@ export const tokenCheck = (req, res, next) => {
     mJwt({
         secret: process.env.JWT_SECRET,
         algorithms: ['HS256'],
-    });
-
+    })(req, res, next);
     if (req.user) {
         next();
     } else {
@@ -13,5 +12,4 @@ export const tokenCheck = (req, res, next) => {
             message: 'Unauthorized',
         });
     }
-
 }
