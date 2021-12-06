@@ -22,9 +22,10 @@ const upload = multer({
     acl: 'public-read',
     contentType: multerS3.AUTO_CONTENT_TYPE,
     key: function (req, file, cb) {
+        console.log(file);
         const timestamp = Date.now();
         const { username } = req.user;
-        const extensionFile = file.originalname.split('.').pop();
+        const extensionFile = file?.originalname.split('.').pop();
         const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
         if (!allowedExtensions.includes(extensionFile)) { 
             return cb(new Error('Invalid file extension'), null);
