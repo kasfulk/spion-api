@@ -13,11 +13,10 @@ const doUpload = (req, res) => {
                 message: err.message
             });
         } else {
-            console.log(req.file);
             res.send({
                 message: 'berhasil',
-                fileName: req.file.originalname,
-                uploadedFileName: req.file.key,
+                fileName: req.file?.originalname,
+                uploadedFileName: req.file?.key,
                 file: req.file,
             })
         }
