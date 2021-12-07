@@ -22,6 +22,10 @@ const deletePhysicalStock = async (req, res) => {
     pjpService.deletePhysicalStock(req, res);
 };
 
+const getPjpReport = async (req, res) => {
+    pjpService.getPjpReport(req, res);
+};
+
 const updatePjpReport = async (req, res) => {
     pjpService.updatePjpReport(req, res);
 };
@@ -38,4 +42,5 @@ export default {
     insertPhysicalStock,
     deletePhysicalStock,
     updatePjpReport,
+    getPjpReport,
 };

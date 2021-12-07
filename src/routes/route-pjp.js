@@ -9,6 +9,7 @@ router.get('/list-brand', pjp.getListBrand);
 router.get('/physical-stock/:reportId', pjp.getPhysicalStock);
 router.post('/physical-stock', pjp.insertPhysicalStock);
 router.delete('/physical-stock/:id', pjp.deletePhysicalStock);
+router.get('/report/:reportId', pjp.getPjpReport);
 router.patch('/report/:reportId', pjp.updatePjpReport);
 
 export default router;

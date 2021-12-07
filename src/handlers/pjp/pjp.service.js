@@ -99,6 +99,24 @@ const getListBrand = async (req, res) => {
     }
 }
 
+const getPjpReport = async (req, res) => {
+    const { reportId } = req.params;
+    const query = `SELECT
+                    *
+                    FROM
+                    pjp_report
+                    WHERE id = ? AND
+                    sf_id = ?`;
+    const params = [reportId, req.user.id];
+    try {
+        const [result, metadata] = await pool.query(query, params);
+        res.status(200).json(result);
+    }
+    catch (err) {
+        res.status(500).json(err);
+    }
+}
+
 const updatePjpReport = async (req, res) => {
     const { user } = req;
     const { reportId } = req.params;
@@ -145,4 +163,5 @@ export default {
     insertPhysicalStock,
     deletePhysicalStock,
     updatePjpReport,
+    getPjpReport,
 }
