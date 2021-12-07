@@ -9,8 +9,33 @@ const indexPage = (req, res) => {
 const getPJPDuration = (req, res) => {
     pjpService.getPJPDuration(req, res);
 };
+
+const getPhysicalStock = async (req, res) => {
+    pjpService.getPhysicalStock(req, res);
+};
+
+const insertPhysicalStock = async (req, res) => {
+    pjpService.insertPhysicalStock(req, res);
+};
+
+const deletePhysicalStock = async (req, res) => {
+    pjpService.deletePhysicalStock(req, res);
+};
+
+const updatePjpReport = async (req, res) => {
+    pjpService.updatePjpReport(req, res);
+};
+
+const getListBrand = async (req, res) => {
+    pjpService.getListBrand(req, res);
+};
  
 export default { 
     indexPage,
     getPJPDuration,
+    getPhysicalStock,
+    getListBrand,
+    insertPhysicalStock,
+    deletePhysicalStock,
+    updatePjpReport,
 };

@@ -5,5 +5,10 @@ const router = express.Router();
 
 router.get('/', pjp.indexPage);
 router.get('/duration', pjp.getPJPDuration);
+router.get('/list-brand', pjp.getListBrand);
+router.get('/physical-stock/:reportId', pjp.getPhysicalStock);
+router.post('/physical-stock', pjp.insertPhysicalStock);
+router.delete('/physical-stock/:id', pjp.deletePhysicalStock);
+router.patch('/report/:reportId', pjp.updatePjpReport);
 
 export default router;

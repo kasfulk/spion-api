@@ -39,6 +39,12 @@ const checkTable = async (table, data) => {
 // Options:
 // Logical Options: AND, OR
 // Where: auto dinamically with object as field and value as search value
+// options: {
+//     logic?: "AND",
+//     wheres: {
+//           field: "value",
+//           field: "value",
+//        }
 //
 export const dbUpdate = async (table, data, options) => {
     const { setData, preparedList } = await checkTable(table, data);

@@ -7,7 +7,6 @@ const indexPage = (req, res) => {
 };
 
 const doUpload = (req, res) => {
-    console.log(req);
     aws.upload(req, res, (err) => {
         if (err) {
             return res.status(500).send({
