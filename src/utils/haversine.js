@@ -1,6 +1,6 @@
 // cord1 : {lat: lat1, lng: lng1}
 // cord2 : {lat: lat2, lng: lng2}
-// return distance in km
+// return distance in meters
 
 export const haversine = (cord1, cord2) => {
   if (cord1.lat == cord2.lat && cord1.lon == cord2.lon) {
@@ -25,6 +25,7 @@ export const haversine = (cord1, cord2) => {
   dist = (dist * 180) / Math.PI;
   dist = dist * 60 * 1.1515;
   dist = dist * 1.609344; //convert miles to km
+  dist = dist * 1000; //convert km to m  
   
   return dist;
 }

@@ -1,4 +1,5 @@
 import { getDay } from '../../utils/date.js';
+import { haversine } from '../../utils/haversine.js';
 import pool from "../../helpers/db.js";
 
 const getDayService = (req, res) => { 
@@ -110,11 +111,22 @@ const outletCheckAction = async (req, res) => {
     if (!allowedActions.includes(action)) res.status(400).json({ message: "Invalid action" });
     if (!outlet_id) res.status(400).json({ message: "Missing required parameters" });
 
+    const queryOutlet = `SELECT * FROM outlet WHERE outlet_id = ?`;
+    const [resultOutlet, metadata] = await pool.query(queryOutlet, [outlet_id]);
+
+    const distance = haversine(latitude, longitude, resultOutlet[0].latitude, resultOutlet[0].longitude);
+
+    if (distance > 15) {
+        res.status(400).json({ message: "Outlet is not in range" });
+        return;
+    }
+
     const queryCheck = `
             SELECT * FROM pjp_check_${action} 
             WHERE outlet_id = ? 
             AND sf_id = ? 
-            AND DATE( date ) = DATE(NOW())`
+            AND DATE( date ) = DATE(NOW())`;
+    
     try {
         const [results, metadata] = await pool.query(queryCheck, params);
 
