@@ -48,7 +48,7 @@ const getOutletCheckInService = async (req, res) => {
                                                     ? - longitude 
                                                 )* pi()/ 180 
                                             )))) * 180 / pi()) * 60 * 1.1515 
-                            ),
+                            ) * 1.609344,
                         1 
                     ) AS distance 
                 FROM
@@ -114,7 +114,15 @@ const outletCheckAction = async (req, res) => {
     const queryOutlet = `SELECT * FROM outlet WHERE outlet_id = ?`;
     const [resultOutlet, metadata] = await pool.query(queryOutlet, [outlet_id]);
 
-    const distance = haversine(latitude, longitude, resultOutlet[0].latitude, resultOutlet[0].longitude);
+    const distance = haversine(
+        {
+            lat: latitude,
+            lon: longitude
+        },
+        {
+            lat: resultOutlet[0].latitude,
+            lon: resultOutlet[0].longitude
+        });
 
     if (distance > 15) {
         res.status(400).json({ message: "Outlet is not in range" });
