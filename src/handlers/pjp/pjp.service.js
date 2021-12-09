@@ -56,11 +56,32 @@ const getPhysicalStock = async (req, res) => {
 
 const insertPhysicalStock = async (req, res) => {
     const { user } = req;
-    const { reportId,outletId, brandId, stock } = req.body;
+    let query = '';
+    let params = [];
+    if (req.body.length) {
+        const preparedData = req.body.map(item => {
+            return `(?, ?, ?, ?, ?)`;
+        });
+        const insertData = req.body.map(item => {
+            return [item.outletId, item.reportId, item.brandId, item.stock, user.id];
+        });
+        query = `INSERT INTO pjp_report_physical_stock (
+                        outlet_id,
+                        report_id,
+                        brand_id,
+                        stock,
+                        created_by
+                        ) VALUES ${preparedData.join(',')}`;
+        params = insertData.flat();
+        
+    } else {
+        const { reportId,outletId, brandId, stock } = req.body;
 
-    const query = `INSERT INTO pjp_report_physical_stock (report_id, outlet_id, brand_id, stock, created_by, created_at)
-                    VALUES (?, ?, ?, ?, ?, NOW())`;
-    const params = [reportId, outletId, brandId, stock, user.id];
+        query = `INSERT INTO pjp_report_physical_stock (report_id, outlet_id, brand_id, stock, created_by, created_at)
+                        VALUES (?, ?, ?, ?, ?, NOW())`;
+        params = [reportId, outletId, brandId, stock, user.id];    
+    }
+    
     try {
         const [result, metadata] = await pool.query(query, params);
         res.status(200).json(result);
