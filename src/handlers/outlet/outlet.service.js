@@ -31,6 +31,7 @@ const getOutletCheckInService = async (req, res) => {
                 (
                 SELECT
                     a.outlet_id,
+                    a.urutan,
                     b.outlet AS nama_outlet,
                     b.latitude,
                     b.longitude,
@@ -56,7 +57,8 @@ const getOutletCheckInService = async (req, res) => {
                     LEFT JOIN outlet b ON a.outlet_id = b.outlet_id 
                 WHERE
                     DAY = ?
-                    AND sales_force_id = ? 
+                    AND sales_force_id = ?
+                    ORDER BY urutan ASC
                 ) outlet_list
                 LEFT JOIN (
                 SELECT
