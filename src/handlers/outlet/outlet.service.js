@@ -86,6 +86,7 @@ const getOutletCheckInService = async (req, res) => {
         res.status(200).json({
             results: results.map(item => {
                 return {
+                    urutan: item.urutan,
                     outlet_id: item.outlet_id,
                     nama_outlet: item.nama_outlet,
                     latitude: item.latitude,
