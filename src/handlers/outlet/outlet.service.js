@@ -177,16 +177,25 @@ const outletCheckAction = async (req, res) => {
                 return;
             }
 
-            const createPjpReportQuery = `INSERT INTO pjp_report (pjp_schedule_id,sf_id,outlet_id,longitude,latitude) VALUES (?, ?, ?, ?, ?);
-                                        SELECT * FROM pjp_report WHERE id = LAST_INSERT_ID()`;
-            const [createPjpReport, metadataCreatePjpReport] = await pool.query(createPjpReportQuery, [resultsCheck[0].id, user.id, outlet_id, longitude, latitude]);
-            const [insertResult, insertMetadata] = await pool.query(insertQuery, params);
+            if (action == 'in') {
+                const createPjpReportQuery = `INSERT INTO pjp_report (pjp_schedule_id,sf_id,outlet_id,longitude,latitude) VALUES (?, ?, ?, ?, ?);
+                                            SELECT * FROM pjp_report WHERE id = LAST_INSERT_ID()`;
+                const [createPjpReport, metadataCreatePjpReport] = await pool.query(createPjpReportQuery, [resultsCheck[0].id, user.id, outlet_id, longitude, latitude]);
+                const [insertResult, insertMetadata] = await pool.query(insertQuery, params);
+                res.status(200).json({
+                    message: `Checked ${action} successfully!`,
+                    pjpReport: createPjpReport[1][0] ? createPjpReport[1][0] : null,
+                    check: insertResult[1][0] ? insertResult[1][0] : null,
+                });
+                return;
+            } else {
+                res.status(200).json({
+                    message: `Checked ${action} successfully!`,
+                });
+                return;
+            }
 
-            res.status(200).json({
-                message: `Checked ${action} successfully!`,
-                pjpReport: createPjpReport[1][0],
-                check: insertResult[1][0],
-            });
+            
         } else {
             res.status(400).json({
                 checked: true,
