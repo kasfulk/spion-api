@@ -110,7 +110,8 @@ const getListBrand = async (req, res) => {
                     id,
                     brand
                     FROM
-                    reference_brand`;
+                    reference_brand
+                    WHERE is_active = 1`;
     try {
         const [result, metadata] = await pool.query(query);
         res.status(200).json(result);
