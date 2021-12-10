@@ -14,7 +14,7 @@ const login = async (username, password, res) => {
                 username: result[0].sf_username,
                 email: result[0].sf_name,
                 tap: result[0].tap
-            }, process.env.JWT_SECRET, { expiresIn: '9h' });
+            }, process.env.JWT_SECRET, { expiresIn: '6d' });
             res.status(200).json({
                 message: 'Login Success',
                 token: token

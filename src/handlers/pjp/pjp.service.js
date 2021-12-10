@@ -94,8 +94,8 @@ const insertPhysicalStock = async (req, res) => {
 const deletePhysicalStock = async (req, res) => {
     const { id } = req.params;
     const { user } = req;
-    const query = `DELETE FROM pjp_report_physical_stock WHERE id = ? AND created_by = ?`;
-    const params = [id, user.id];
+    const query = `DELETE FROM pjp_report_physical_stock WHERE (id = ? OR outlet_id = ?) AND created_at = DATE(NOW()) AND created_by = ?`;
+    const params = [id, id, user.id];
     try {
         const [result, metadata] = await pool.query(query, params);
         res.status(200).json(result);
@@ -126,9 +126,10 @@ const getPjpReport = async (req, res) => {
                     *
                     FROM
                     pjp_report
-                    WHERE id = ? AND
+                    WHERE ( id = ? OR outlet_id = ? )  AND
+                    created_at = DATE(NOW()) AND
                     sf_id = ?`;
-    const params = [reportId, req.user.id];
+    const params = [reportId, reportId, req.user.id];
     try {
         const [result, metadata] = await pool.query(query, params);
         res.status(200).json(result);

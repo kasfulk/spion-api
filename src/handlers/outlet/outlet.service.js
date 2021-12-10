@@ -133,10 +133,14 @@ const outletCheckAction = async (req, res) => {
     }
 
     const queryCheck = `
-            SELECT * FROM pjp_check_${action} 
-            WHERE outlet_id = ? 
-            AND sf_id = ? 
-            AND DATE( date ) = DATE(NOW())`;
+            SELECT * FROM pjp_check_${action} a
+            LEFT JOIN
+            pjp_report b
+            ON a.outlet_id = b.outlet_id
+            WHERE a.outlet_id = ?
+            AND a.sf_id = ?
+            AND DATE(b.created_at) = DATE(NOW())
+            AND DATE( a.date ) = DATE(NOW())`;
     
     try {
         const [results, metadata] = await pool.query(queryCheck, params);
@@ -180,7 +184,8 @@ const outletCheckAction = async (req, res) => {
         } else {
             res.status(400).json({
                 checked: true,
-                message: `You have already checked ${action} today!`
+                message: `You have already checked ${action} today!`,
+                checkData: results[0]
             });
         }
     } catch (error) {
