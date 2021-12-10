@@ -88,7 +88,6 @@ const getOutletCheckInService = async (req, res) => {
     const params = [latitude, latitude, longitude, day, user.id,user.id,user.id];
     const [results, metadata] = await pool.query(query, params);
     if (results.length > 0) {
-        console.log(results);
         res.status(200).json({
             results: results.map(item => {
                 return {
