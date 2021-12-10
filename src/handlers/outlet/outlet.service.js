@@ -189,8 +189,10 @@ const outletCheckAction = async (req, res) => {
                 });
                 return;
             } else {
+                const [insertResult, insertMetadata] = await pool.query(insertQuery, params);
                 res.status(200).json({
                     message: `Checked ${action} successfully!`,
+                    check: insertResult[1][0] ? insertResult[1][0] : null,
                 });
                 return;
             }
