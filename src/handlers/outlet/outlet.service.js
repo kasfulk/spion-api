@@ -26,7 +26,9 @@ const getOutletCheckInService = async (req, res) => {
             IF
                 ( ISNULL( check_in.outlet_id ), 0, 1 ) AS isCheckIn,
             IF
-                ( ISNULL( check_out.outlet_id ), 0, 1 ) AS isCheckOut 
+                ( ISNULL( check_out.outlet_id ), 0, 1 ) AS isCheckOut,
+            IF ( ISNULL( outletstate.isClosed ), 0, 1 ) AS isClosed,
+            IF ( ISNULL( outletstate.needConfirm ), 0, 1 ) AS needConfirm
             FROM
                 (
                 SELECT
