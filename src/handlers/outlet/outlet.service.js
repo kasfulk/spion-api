@@ -1,4 +1,4 @@
-import { getDay } from '../../utils/date.js';
+import { getDay, getDate } from '../../utils/date.js';
 import { haversine } from '../../utils/haversine.js';
 import pool from "../../helpers/db.js";
 
@@ -79,7 +79,10 @@ const getOutletCheckInService = async (req, res) => {
                 DATE( date ) = DATE(
                 NOW())
                     AND sf_id = ?
-                ) check_out ON outlet_list.outlet_id = check_out.outlet_id`;
+                ) check_out ON outlet_list.outlet_id = check_out.outlet_id
+                LEFT JOIN (
+                    SELECT isClosed,needConfirm FROM outlet_state WHERE date = DATE(NOW())
+                ) outletstate ON outlet_list.outlet_id = outletstate.outlet_id`;
     const params = [latitude, latitude, longitude, day, user.id,user.id,user.id];
     const [results, metadata] = await pool.query(query, params);
     if (results.length > 0) {
@@ -93,7 +96,9 @@ const getOutletCheckInService = async (req, res) => {
                     longitude: item.longitude,
                     distance: item.distance,
                     isCheckedIn: item.isCheckIn == 1 ? true : false,
-                    isCheckedOut: item.isCheckOut == 1 ? true : false
+                    isCheckedOut: item.isCheckOut == 1 ? true : false,
+                    isClosed: item.isClosed == 1 ? true : false,
+                    needConfirm: item.needConfirm == 1 ? true : false
                 }
             })
         });
@@ -213,6 +218,43 @@ const outletCheckAction = async (req, res) => {
     
 }
 
+const outletStateAction = async (req, res) => {
+    const { outletId } = req.params;
+    let { isClosed, needConfirm } = req.body;
+    const date = getDate(new Date());
+
+    if (!outletId) res.status(400).json({ message: "Missing required parameters" });
+    
+    const queryOutlet = `SELECT * FROM outlet_state WHERE outlet_id = ? AND date  = ?`;
+    const [resultOutlet, metadata] = await pool.query(queryOutlet, [outletId, date]);
+
+    if (resultOutlet.length == 0) {
+        const isClosedData = isClosed ? 1 : 0;
+        const needConfirmData = needConfirm ? 1 : 0;
+        const insertQuery = `INSERT INTO outlet_state (outlet_id, date, isClosed, needConfirm) VALUES (?, ?, ?, ?);
+                            SELECT * FROM outlet_state WHERE outlet_id = ? AND date = ?`;
+        const [insertResult, insertMetadata] = await pool.query(insertQuery, [outletId, date, isClosedData, needConfirmData,outletId, date]);
+        res.status(200).json({
+            message: "Outlet state inserted successfully!",
+            outlet: insertResult[1][0] ? insertResult[1][0] : null
+        });
+    } else {
+        if (isClosed == null) isClosed = resultOutlet[0].isClosed;
+        if (needConfirm == null) needConfirm = resultOutlet[0].needConfirm;
+
+        const isClosedData = isClosed ? 1 : 0;
+        const needConfirmData = needConfirm ? 1 : 0;
+
+        const updateQuery = `UPDATE outlet_state SET isClosed = ?, needConfirm = ? WHERE outlet_id = ? AND date = ?;
+                            SELECT * FROM outlet_state WHERE outlet_id = ? AND date = ?`;
+        const [updateResult, updateMetadata] = await pool.query(updateQuery, [isClosedData, needConfirmData, outletId, date, outletId, date]);
+        res.status(200).json({
+            message: "Outlet state updated successfully!",
+            outlet: updateResult[1][0] ? updateResult[1][0] : null
+        });
+    }
+}
+
 
 
 
@@ -221,4 +263,5 @@ export default {
     getDayService,
     getOutletCheckInService,
     outletCheckAction,
+    outletStateAction,
 }
