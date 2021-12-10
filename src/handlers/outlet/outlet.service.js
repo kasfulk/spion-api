@@ -133,7 +133,13 @@ const outletCheckAction = async (req, res) => {
     }
 
     const queryCheck = `
-            SELECT * FROM pjp_check_${action} a
+            SELECT
+            b.id AS report_id,
+            a.created_at as check_${action}_time,
+            a.longitude as check_${action}_longitude,
+            a.latitude as check_${action}_latitude,
+            b.pjp_schedule_id
+            FROM pjp_check_${action} a
             LEFT JOIN
             pjp_report b
             ON a.outlet_id = b.outlet_id
