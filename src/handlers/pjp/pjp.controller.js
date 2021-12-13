@@ -33,6 +33,18 @@ const updatePjpReport = async (req, res) => {
 const getListBrand = async (req, res) => {
     pjpService.getListBrand(req, res);
 };
+
+const getPjpBarcode = async (req, res) => {
+    pjpService.getPjpBarcode(req, res);
+};
+
+const insertPjpBarcode = async (req, res) => {
+    pjpService.insertPjpBarcode(req, res);
+};
+
+const deletePjpBarcode = async (req, res) => {
+    pjpService.deletePjpBarcode(req, res);
+};
  
 export default { 
     indexPage,
@@ -43,4 +55,7 @@ export default {
     deletePhysicalStock,
     updatePjpReport,
     getPjpReport,
+    getPjpBarcode,
+    insertPjpBarcode,
+    deletePjpBarcode,
 };

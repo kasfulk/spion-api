@@ -28,6 +28,78 @@ const getPJPDuration = async (req, res) => {
     }
 }
 
+const getPjpBarcode = async (req, res) => {
+    const { user } = req;
+    const { sn } = req.params;
+    
+    const query = `SELECT
+                    *
+                    FROM pjp_barcode
+                    WHERE
+                    sn = ?;`;
+    const params = [sn];
+    try {
+        const [result, metadata] = await pool.query(query, params);
+        const resultData = result[0];
+        res.status(200).json(resultData);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+}
+
+
+const insertPjpBarcode = async (req, res) => {
+    const { user } = req;
+    const { reportId, outletId, sn } = req.body;
+
+    //check sn
+    const queryCheck = `SELECT
+                    COUNT(*) AS total
+                    FROM
+                    pjp_barcode
+                    WHERE
+                    sn = ?`;
+    const paramsCheck = [sn];
+
+    
+    try {
+        const [resultCheck, metadataCheck] = await pool.query(queryCheck, paramsCheck);
+        
+        if (resultCheck[0].total > 0) {
+            res.status(400).json({
+                message: "SN already exist"
+            });
+            return;
+        }
+
+        const query = `INSERT INTO pjp_barcode (report_id, outlet_id, sn, created_by) VALUES (?, ?, ?, ?)
+                        SELECT * FROM pjp_barcode WHERE id = LAST_INSERT_ID()`;
+        const params = [reportId, outletId, sn, user.id];
+
+        const [result, metadata] = await pool.query(query, params);
+        res.status(200).json(result[1][0]);
+    }
+    catch (err) {
+        res.status(500).json(err);
+    }
+}
+
+const deletePjpBarcode = async (req, res) => {
+    const { user } = req;
+    const { sn } = req.params;
+    
+    const query = `DELETE FROM pjp_barcode WHERE sn = ? AND created_by = ?`;
+    const params = [sn, user.id];
+    
+    try {
+        const [result, metadata] = await pool.query(query, params);
+        res.status(200).json(result);
+    }
+    catch (err) {
+        res.status(500).json(err);
+    }
+}
+
 const getPhysicalStock = async (req, res) => {
     const { reportId } = req.params;
     const query = `SELECT
@@ -187,4 +259,7 @@ export default {
     deletePhysicalStock,
     updatePjpReport,
     getPjpReport,
+    insertPjpBarcode,
+    deletePjpBarcode,
+    getPjpBarcode,
 }
