@@ -29,15 +29,14 @@ const getPJPDuration = async (req, res) => {
 }
 
 const getPjpBarcodeList = async (req, res) => {
-    const { user } = req;
-    const { report_id } = req.params;
+    const { reportId } = req.params;
     
     const query = `SELECT
                     *
                     FROM pjp_barcode
                     WHERE
                     report_id = ?;`;
-    const params = [report_id];
+    const params = [reportId];
     try {
         const [result, metadata] = await pool.query(query, params);
         res.status(200).json(result);
