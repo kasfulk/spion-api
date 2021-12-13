@@ -84,7 +84,8 @@ const getOutletCheckInService = async (req, res) => {
                 ) check_out ON outlet_list.outlet_id = check_out.outlet_id
                 LEFT JOIN (
                     SELECT isClosed,needConfirm,outlet_id FROM outlet_state WHERE date = DATE(NOW())
-                ) outletstate ON outlet_list.outlet_id = outletstate.outlet_id`;
+                ) outletstate ON outlet_list.outlet_id = outletstate.outlet_id
+                ORDER BY outlet_list.urutan ASC`;
     const params = [latitude, latitude, longitude, day, user.id,user.id,user.id];
     const [results, metadata] = await pool.query(query, params);
     if (results.length > 0) {
