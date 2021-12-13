@@ -72,7 +72,7 @@ const insertPjpBarcode = async (req, res) => {
             return;
         }
 
-        const query = `INSERT INTO pjp_barcode (report_id, outlet_id, sn, created_by) VALUES (?, ?, ?, ?)
+        const query = `INSERT INTO pjp_barcode (report_id, outlet_id, sn, created_by) VALUES (?, ?, ?, ?);
                         SELECT * FROM pjp_barcode WHERE id = LAST_INSERT_ID()`;
         const params = [reportId, outletId, sn, user.id];
 
