@@ -14,6 +14,7 @@ router.patch('/report/:reportId', pjp.updatePjpReport);
 router.get('/barcode/:sn', pjp.getPjpBarcode);
 router.post('/barcode', pjp.insertPjpBarcode);
 router.delete('/barcode/:sn', pjp.deletePjpBarcode);
+router.get('/barcode-list/:reportId', pjp.getPjpBarcodeList);
 
 
 export default router;

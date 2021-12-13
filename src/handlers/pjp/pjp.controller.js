@@ -45,6 +45,10 @@ const insertPjpBarcode = async (req, res) => {
 const deletePjpBarcode = async (req, res) => {
     pjpService.deletePjpBarcode(req, res);
 };
+
+const getPjpBarcodeList = async (req, res) => {
+    pjpService.getPjpBarcodeList(req, res);
+};
  
 export default { 
     indexPage,
@@ -58,4 +62,5 @@ export default {
     getPjpBarcode,
     insertPjpBarcode,
     deletePjpBarcode,
+    getPjpBarcodeList,
 };
