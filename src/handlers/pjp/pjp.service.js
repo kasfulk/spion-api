@@ -217,7 +217,7 @@ const getPjpReport = async (req, res) => {
                     FROM
                     pjp_report
                     WHERE ( id = ? OR outlet_id = ? )  AND
-                    created_at = DATE(NOW()) AND
+                    DATE(created_at) = DATE(NOW()) AND
                     sf_id = ?`;
     const params = [reportId, reportId, req.user.id];
     try {
