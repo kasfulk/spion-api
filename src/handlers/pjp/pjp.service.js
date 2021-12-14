@@ -222,7 +222,7 @@ const getPjpReport = async (req, res) => {
     const params = [reportId, reportId, req.user.id];
     try {
         const [result, metadata] = await pool.query(query, params);
-        res.status(200).json(result);
+        res.status(200).json(result[0]);
     }
     catch (err) {
         res.status(500).json(err);
