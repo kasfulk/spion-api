@@ -246,15 +246,7 @@ const updatePjpReport = async (req, res) => {
 
     try {
         const update = await dbUpdate('pjp_report', {
-            pjp_selfie_photo_link, 
-            pjp_linkaja_photo_link, 
-            pjp_display_photo_link, 
-            pjp_linkaja_balance, 
-            pjp_physic_stock_photo_link, 
-            pjp_transaction_photo_link, 
-            pjp_transaction_note_photo_link, 
-            pjp_competitor_photo_link, 
-            pjp_eup_price_photo_link
+            ...req.body,
         }, {
             wheres: {
                 id: reportId,
