@@ -6,5 +6,6 @@ const router = express.Router();
 
 router.get('/', upload.indexPage);
 router.post('/', upload.doUpload);
+router.post('/:reportId', upload.uploadReport);
 
 export default router;
