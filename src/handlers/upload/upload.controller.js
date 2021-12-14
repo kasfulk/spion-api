@@ -42,7 +42,7 @@ const uploadReport = async (req, res) => {
         });
     }
 
-    await aws.upload(req, res, (err) => {
+    aws.upload(req, res, (err) => {
         if (err) {
             return res.status(500).send({
                 message: err.message
