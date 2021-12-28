@@ -24,7 +24,7 @@ const doUpload = (req, res) => {
     });
 };
 
-const uploadReport = async (req, res) => {
+const uploadReport = (req, res) => {
     const { field } = req.query;
     const { reportId } = req.params;
     const allowedField = [
@@ -42,7 +42,7 @@ const uploadReport = async (req, res) => {
         });
     }
 
-    aws.upload(req, res, (err) => {
+    aws.upload(req, res, async (err) => {
         if (err) {
             return res.status(500).send({
                 message: err.message
