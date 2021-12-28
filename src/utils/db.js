@@ -26,7 +26,7 @@ const checkTable = async (table, data) => {
     for (const key of fieldList) {
 
         setData.push(`${key} = ?`);
-        preparedList.push(data[key]);
+        preparedList.push(JSON.stringify(data[key]));
     }
 
     return {

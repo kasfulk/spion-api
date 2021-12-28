@@ -49,8 +49,8 @@ const uploadReport = async (req, res) => {
             });
         } else {
             const urlImage = String(req.file?.location).replace('itopkal.sgp1.digitaloceanspaces.com', 'itopkal.sgp1.cdn.digitaloceanspaces.com');
-            const query = `UPDATE pjp_report SET ${field} = ? WHERE id = ?`;
-            const params = [urlImage, reportId];
+            const query = `UPDATE pjp_report SET ? = ? WHERE id = ?`;
+            const params = [field, urlImage, reportId];
             try {
                 const [result, metadata] = await pool.query(query, params);
             } catch (err) {
