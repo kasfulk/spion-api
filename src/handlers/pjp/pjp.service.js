@@ -230,12 +230,27 @@ const getPjpReport = async (req, res) => {
 }
 
 const updatePjpReport = async (req, res) => {
-    const { user } = req;
+    const { user, body } = req;
     const { reportId } = req.params;
 
     try {
+
+        for (const key in body) {
+            switch (key) {
+                case 'pjp_linkaja_balance':
+                    body['pjp_linkaja_balance'] = Number(body['pjp_linkaja_balance']);
+                    break;
+                case 'diamond_spot':
+                    body['diamond_spot'] = Number(body['diamond_spot']);
+                    break;
+                default:
+                    body[key] = body[key];
+                    break;
+            }
+        }
+
         const update = await dbUpdate('pjp_report', {
-            ...req.body,
+            ...body,
         }, {
             wheres: {
                 id: reportId,
