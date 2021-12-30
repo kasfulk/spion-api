@@ -64,10 +64,13 @@ export const dbUpdate = async (table, data, options) => {
 
     const sql = `UPDATE ${table} SET ${setData.join(", ")} WHERE ${whereList.join(` ${logicalCondition} `)};
                  SELECT *  FROM ${table} WHERE ${whereList.join(` ${logicalCondition} `)}`;
-
-    const [result] = await pool.query(sql,preparedList);
-
-    return result;
+    try {
+        const [result] = await pool.query(sql, preparedList);
+        return result;
+    } catch (err) {
+        console.log(sql, err);
+        throw err;
+    }
 };
 
 // Options:
