@@ -64,12 +64,10 @@ export const dbUpdate = async (table, data, options) => {
 
     const sql = `UPDATE ${table} SET ${setData.join(", ")} WHERE ${whereList.join(` ${logicalCondition} `)};
                  SELECT *  FROM ${table} WHERE ${whereList.join(` ${logicalCondition} `)}`;
-    console.log(sql, preparedList);
     try {
         const [result] = await pool.query(sql, preparedList);
         return result;
     } catch (err) {
-        console.log(sql, err);
         throw err;
     }
 };
@@ -91,7 +89,6 @@ export const dbInsert = async (table, data, options) => {
     // insert mysql query
     const sql = `INSERT INTO ${table} (${fieldList.join(", ")}) VALUES (${insertList.join(", ")});
                 SELECT * FROM ${table} WHERE ${keyField}='${whereKey}';`;
-    console.log(sql);
 
     const [result] = await pool.query(sql,preparedList);
 
