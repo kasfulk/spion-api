@@ -249,6 +249,8 @@ const updatePjpReport = async (req, res) => {
             }
         }
 
+        console.log(body);
+
         const update = await dbUpdate('pjp_report', {
             ...body,
         }, {
