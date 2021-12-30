@@ -135,7 +135,7 @@ const outletCheckAction = async (req, res) => {
             lon: resultOutlet[0].longitude
         });
 
-    if (distance > 15) {
+    if (distance > 30) {
         res.status(400).json({ message: "Outlet is not in range" });
         return;
     }
