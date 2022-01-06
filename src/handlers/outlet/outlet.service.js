@@ -199,7 +199,15 @@ const outletCheckAction = async (req, res) => {
                 });
                 return;
             } else {
-                const params = [outlet_id, user.id, longitude, latitude, Number(report_id)];
+                const checkInSQL = `SELECT * FROM
+                                    pjp_check_in
+                                    WHERE
+                                    outlet_id = ? AND
+                                    sf_id = ? AND
+                                    DATE(created_at) = DATE(NOW())`;
+                const paramsCheckIn = [outlet_id, user.id];
+                const [checkInResult, checkInMetadata] = await pool.query(checkInSQL, paramsCheckIn);
+                const params = [outlet_id, user.id, longitude, latitude, checkInResult[0].report_id];
                 const [insertResult, insertMetadata] = await pool.query(insertQuery, params);
                 res.status(200).json({
                     message: `Checked ${action} successfully!`,
