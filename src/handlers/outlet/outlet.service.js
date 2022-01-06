@@ -113,8 +113,7 @@ const getOutletCheckInService = async (req, res) => {
 }
 
 const outletCheckAction = async (req, res) => {
-    const { action, outlet_id, longitude, latitude } = req.body;
-    const { reportId } = req.query;
+    const { action, outlet_id, longitude, latitude, report_id } = req.body;
     const { user } = req;
     const paramsFirst = [outlet_id, user.id, longitude, latitude];
     const allowedActions = ['in', 'out'];
@@ -158,7 +157,7 @@ const outletCheckAction = async (req, res) => {
             AND DATE( a.date ) = DATE(NOW())`;
     
     try {
-        const [results, metadata] = await pool.query(queryCheck, params);
+        const [results, metadata] = await pool.query(queryCheck, paramsFirst);
 
         if (results.length == 0) {
             
@@ -190,7 +189,8 @@ const outletCheckAction = async (req, res) => {
                 const createPjpReportQuery = `INSERT INTO pjp_report (pjp_schedule_id,sf_id,outlet_id,longitude,latitude) VALUES (?, ?, ?, ?, ?);
                                             SELECT * FROM pjp_report WHERE id = LAST_INSERT_ID()`;
                 const [createPjpReport, metadataCreatePjpReport] = await pool.query(createPjpReportQuery, [resultsCheck[0].id, user.id, outlet_id, longitude, latitude]);
-                const params = [outlet_id, user.id, longitude, latitude, createPjpReport[0][1].id];
+                console.log(createPjpReport[1][0]);
+                const params = [outlet_id, user.id, longitude, latitude, createPjpReport[1][0].id];
                 const [insertResult, insertMetadata] = await pool.query(insertQuery, params);
                 res.status(200).json({
                     message: `Checked ${action} successfully!`,
@@ -199,7 +199,7 @@ const outletCheckAction = async (req, res) => {
                 });
                 return;
             } else {
-                const params = [outlet_id, user.id, longitude, latitude, reportId];
+                const params = [outlet_id, user.id, longitude, latitude, Number(report_id)];
                 const [insertResult, insertMetadata] = await pool.query(insertQuery, params);
                 res.status(200).json({
                     message: `Checked ${action} successfully!`,
