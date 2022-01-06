@@ -3,7 +3,18 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 
-const login = async (username, password, res) => {
+const login = async (req, res) => {
+    const { username, password, version } = req.body;
+    const checkVersion = `SELECT version FROM latest_version`;
+    const [resultVersion, metadataVersion] = await pool.query(checkVersion);
+    
+    if (version !== resultVersion[0].version) {
+        res.status(400).send({
+            message: 'Version Tidak Sesuai'
+        });
+        return;
+    }
+
     const query = `SELECT * FROM sales_force WHERE sf_username = ? AND is_active = 1`;
     const [result,field] = await pool.query(query,[username,password]);
     if (result.length > 0) {

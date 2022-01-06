@@ -7,8 +7,7 @@ const indexPage = (req, res) => {
   };
 
 const login = (req, res) => {
-    const { username, password } = req.body;
-    authService.login( username, password, res);
+    authService.login( req, res);
 }
 
 const checkPayload = (req, res) => {
