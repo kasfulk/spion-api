@@ -116,6 +116,7 @@ const outletCheckAction = async (req, res) => {
     const { action, outlet_id, longitude, latitude } = req.body;
     const { reportId } = req.query;
     const { user } = req;
+    const paramsFirst = [outlet_id, user.id, longitude, latitude];
     const allowedActions = ['in', 'out'];
     const day = getDay(new Date());
     
@@ -163,7 +164,7 @@ const outletCheckAction = async (req, res) => {
             
             if (action == 'out') {
                 const queryCheckIn = `SELECT * FROM pjp_check_in WHERE outlet_id = ? AND sf_id = ? AND DATE( date ) = DATE(NOW())`;
-                const [resultsCheckIn, metadataCheckIn] = await pool.query(queryCheckIn, params);
+                const [resultsCheckIn, metadataCheckIn] = await pool.query(queryCheckIn, paramsFirst);
                 if (resultsCheckIn.length == 0) {
                     res.status(400).json({ message: "Check in not found" });
                     return;
