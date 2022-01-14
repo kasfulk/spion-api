@@ -6,8 +6,10 @@ const getPJPDuration = async (req, res) => {
     const { user } = req;
     const day = getDay(new Date());
     
+    const divider = day == "Sabtu" ? 180 : 270;
+
     const query = `SELECT
-                    ROUND(270/COUNT(OUTLET_ID),0) AS pjp_duration,
+                    ROUND(${divider}/COUNT(OUTLET_ID),0) AS pjp_duration,
                     COUNT(OUTLET_ID) AS total_outlets
                     FROM
                     pjp_schedule
@@ -18,8 +20,9 @@ const getPJPDuration = async (req, res) => {
     try {
         const [result, metadata] = await pool.query(query, params);
         const { pjp_duration, total_outlets } = result[0];
+        const duration = Number(pjp_duration) >= 30 ? 30 : Number(pjp_duration);
         res.status(200).json({
-            pjp_duration: Number(pjp_duration),
+            pjp_duration: Number(duration),
             total_outlets: Number(total_outlets)
         });
     }
