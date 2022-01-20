@@ -6,6 +6,10 @@ import upload from './route-upload.js';
 
 const router = express.Router();
 
+router.get('/', (req, res) => {
+    res.send('Welcome to the API');
+});
+
 router.use('/user', routerUser);
 router.use('/outlet', routerOutlet);
 router.use('/pjp', routerPjp);
