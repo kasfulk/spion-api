@@ -2,7 +2,7 @@ import pjpService from "./pjp.service.js";
 
 const indexPage = (req, res) => {
     res.send({
-      message: 'berhasil',
+        message: 'berhasil',
     });
 };
 
@@ -49,8 +49,20 @@ const deletePjpBarcode = async (req, res) => {
 const getPjpBarcodeList = async (req, res) => {
     pjpService.getPjpBarcodeList(req, res);
 };
- 
-export default { 
+
+const insertPjpReportStatus = async (req, res) => {
+    pjpService.insertPjpReportStatus(req, res);
+};
+
+const getDataStatus = async (req, res) => {
+    pjpService.getDataStatus(req, res);
+};
+
+const insertPjpReportStatusEupPrice = async (req, res) => {
+    pjpService.insertPjpReportStatusEupPrice(req, res);
+};
+
+export default {
     indexPage,
     getPJPDuration,
     getPhysicalStock,
@@ -63,4 +75,7 @@ export default {
     insertPjpBarcode,
     deletePjpBarcode,
     getPjpBarcodeList,
+    insertPjpReportStatus,
+    getDataStatus,
+    insertPjpReportStatusEupPrice
 };

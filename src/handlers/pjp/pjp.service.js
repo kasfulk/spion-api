@@ -5,7 +5,7 @@ import { getDay } from '../../utils/date.js';
 const getPJPDuration = async (req, res) => {
     const { user } = req;
     const day = getDay(new Date());
-    
+
     const divider = day == "Sabtu" ? 180 : 270;
 
     const query = `SELECT
@@ -33,7 +33,7 @@ const getPJPDuration = async (req, res) => {
 
 const getPjpBarcodeList = async (req, res) => {
     const { reportId } = req.params;
-    
+
     const query = `SELECT
                     *
                     FROM pjp_barcode
@@ -51,7 +51,7 @@ const getPjpBarcodeList = async (req, res) => {
 const getPjpBarcode = async (req, res) => {
     const { user } = req;
     const { sn } = req.params;
-    
+
     const query = `SELECT
                     *
                     FROM pjp_barcode
@@ -81,10 +81,10 @@ const insertPjpBarcode = async (req, res) => {
                     sn = ?`;
     const paramsCheck = [sn];
 
-    
+
     try {
         const [resultCheck, metadataCheck] = await pool.query(queryCheck, paramsCheck);
-        
+
         if (resultCheck[0].total > 0) {
             res.status(400).json({
                 message: "SN already exist"
@@ -107,10 +107,10 @@ const insertPjpBarcode = async (req, res) => {
 const deletePjpBarcode = async (req, res) => {
     const { user } = req;
     const { sn } = req.params;
-    
+
     const query = `DELETE FROM pjp_barcode WHERE sn = ? AND created_by = ?`;
     const params = [sn, user.id];
-    
+
     try {
         const [result, metadata] = await pool.query(query, params);
         res.status(200).json(result);
@@ -165,15 +165,15 @@ const insertPhysicalStock = async (req, res) => {
                         created_by
                         ) VALUES ${preparedData.join(',')}`;
         params = insertData.flat();
-        
+
     } else {
-        const { reportId,outletId, brandId, stock } = req.body;
+        const { reportId, outletId, brandId, stock } = req.body;
 
         query = `INSERT INTO pjp_report_physical_stock (report_id, outlet_id, brand_id, stock, created_by, created_at)
                         VALUES (?, ?, ?, ?, ?, NOW())`;
-        params = [reportId, outletId, brandId, stock, user.id];    
+        params = [reportId, outletId, brandId, stock, user.id];
     }
-    
+
     try {
         const [result, metadata] = await pool.query(query, params);
         res.status(200).json(result);
@@ -195,7 +195,7 @@ const deletePhysicalStock = async (req, res) => {
         res.status(500).json(err);
     }
 }
-    
+
 
 const getListBrand = async (req, res) => {
     const query = `SELECT
@@ -236,6 +236,8 @@ const updatePjpReport = async (req, res) => {
     const { user, body } = req;
     const { reportId } = req.params;
 
+    console.log(body);
+
     try {
 
         for (const key in body) {
@@ -266,6 +268,103 @@ const updatePjpReport = async (req, res) => {
     }
 }
 
+const insertPjpReportStatus = async (req, res) => {
+    const { outletId, pjp_schedule_id, status_branding, status_display, status_transaksi, status_promotion } = req.body;
+
+    try {
+
+        const query = `INSERT INTO pjp_report_status (outlet_id, sf_id, pjp_schedule_id, status_branding, status_display, status_transaksi, status_promotion) VALUES (?, ?, ?, ?, ?, ?, ?);`;
+        const params = [outletId, req.user.id, pjp_schedule_id, status_branding, status_display, status_transaksi, status_promotion];
+
+        const [result, metadata] = await pool.query(query, params);
+
+        if (result.affectedRows != 0) {
+            res.status(200).json({
+                'status': 201,
+                'message': 'Input Pjp Status Success'
+            });
+        } else {
+            res.status(400).json();
+        }
+    }
+    catch (err) {
+        res.status(500).json(err);
+    }
+}
+
+const getDataStatus = async (req, res) => {
+    const { tableName } = req.params;
+    try {
+
+        const query = `SELECT * FROM ${tableName}`;
+
+        const [result] = await pool.query(query);
+
+        if (result.affectedRows != 0) {
+            res.status(200).json({
+                'status': 200,
+                'message': `Get Data ${tableName} Success`,
+                'data': result
+            });
+        } else {
+            res.status(400).json();
+        }
+    }
+    catch (err) {
+        res.status(500).json(err);
+    }
+}
+
+const insertPjpReportStatusEupPrice = async (req, res) => {
+    const { outletId, cap_tsel, price_tsel, cap_isat, price_isat, cap_tri, price_tri, cap_xl, price_xl, cap_sf, price_sf } = req.body;
+
+    const { tableName } = req.params;
+
+    try {
+        const query = `INSERT INTO ${tableName} (
+            outlet_id, 
+            sf_id, 
+            cap_tsel, 
+            price_tsel, 
+            cap_isat, 
+            price_isat, 
+            cap_tri, 
+            price_tri, 
+            cap_xl, 
+            price_xl, 
+            cap_sf, 
+            price_sf
+            ) VALUES (
+            ?, 
+            ?, 
+            ?,
+            ?, 
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?
+            );`;
+        const params = [outletId, req.user.id, cap_tsel, price_tsel, cap_isat, price_isat, cap_tri, price_tri, cap_xl, price_xl, cap_sf, price_sf];
+
+        const [result, metadata] = await pool.query(query, params);
+
+        if (result.affectedRows != 0) {
+            res.status(200).json({
+                'status': 201,
+                'message': `Input Pjp EUP Price Success to ${tableName}`
+            });
+        } else {
+            res.status(400).json();
+        }
+    }
+    catch (err) {
+        res.status(500).json(err);
+    }
+}
 
 export default {
     getPJPDuration,
@@ -278,5 +377,8 @@ export default {
     insertPjpBarcode,
     deletePjpBarcode,
     getPjpBarcode,
-    getPjpBarcodeList
+    getPjpBarcodeList,
+    insertPjpReportStatus,
+    getDataStatus,
+    insertPjpReportStatusEupPrice
 }
