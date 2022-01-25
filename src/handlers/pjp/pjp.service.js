@@ -248,6 +248,24 @@ const updatePjpReport = async (req, res) => {
                 case 'diamond_spot':
                     body['diamond_spot'] = Number(body['diamond_spot']);
                     break;
+
+                // new-est
+                case 'pjp_status_branding_id':
+                    body['pjp_status_branding_id'] = Number(body['pjp_status_branding_id']);
+                    break;
+
+                case 'pjp_status_display_id':
+                    body['pjp_status_display_id'] = Number(body['pjp_status_display_id']);
+                    break;
+
+                case 'pjp_status_transaction_id':
+                    body['pjp_status_transaction_id'] = Number(body['pjp_status_transaction_id']);
+                    break;
+
+                case 'pjp_status_promotion_id':
+                    body['pjp_status_promotion_id'] = Number(body['pjp_status_promotion_id']);
+                    break;
+
                 default:
                     body[key] = body[key];
                     break;
