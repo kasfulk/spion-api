@@ -334,13 +334,14 @@ const getDataStatus = async (req, res) => {
 }
 
 const insertPjpReportStatusEupPrice = async (req, res) => {
-    const { outletId, cap_tsel, price_tsel, cap_isat, price_isat, cap_tri, price_tri, cap_xl, price_xl, cap_sf, price_sf } = req.body;
+    const { outletId, report_id, cap_tsel, price_tsel, cap_isat, price_isat, cap_tri, price_tri, cap_xl, price_xl, cap_sf, price_sf } = req.body;
 
     const { tableName } = req.params;
 
     try {
         const query = `INSERT INTO ${tableName} (
             outlet_id, 
+            report_id, 
             sf_id, 
             cap_tsel, 
             price_tsel, 
@@ -355,6 +356,7 @@ const insertPjpReportStatusEupPrice = async (req, res) => {
             ) VALUES (
             ?, 
             ?, 
+            ?, 
             ?,
             ?, 
             ?,
@@ -366,7 +368,7 @@ const insertPjpReportStatusEupPrice = async (req, res) => {
             ?,
             ?
             );`;
-        const params = [outletId, req.user.id, cap_tsel, price_tsel, cap_isat, price_isat, cap_tri, price_tri, cap_xl, price_xl, cap_sf, price_sf];
+        const params = [outletId, report_id, req.user.id, cap_tsel, price_tsel, cap_isat, price_isat, cap_tri, price_tri, cap_xl, price_xl, cap_sf, price_sf];
 
         const [result, metadata] = await pool.query(query, params);
 
