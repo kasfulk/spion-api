@@ -3,21 +3,10 @@ import pool from "../helpers/db.js";
 const dbName = process.env.DB_NAME;
 
 const allowedLogical = (string) => {
-    const logical = ["AND","OR"];
+    const logical = ["AND", "OR"];
     if (logical.includes(string)) {
         return string;
     }
-}
-
-type UpdateOptions = {
-    logic?: "AND" | "OR";
-    wheres: {
-        fieldName?:String
-    };
-}
-
-type InsertOptions = {
-    keyField: STRING
 }
 
 const checkTable = async (table, data) => {
@@ -57,9 +46,9 @@ const checkTable = async (table, data) => {
 //           field: "value",
 //        }
 //
-export const dbUpdate = async (table: String, data: [any], options: UpdateOptions) => {
+export const dbUpdate = async (table, data, options) => {
     const { setData, preparedList } = await checkTable(table, data);
-    const {logic, wheres} = options;
+    const { logic, wheres } = options;
     const logicalCondition = logic ? allowedLogical(logic) : "AND";
     const whereList = [];
 
@@ -86,9 +75,9 @@ export const dbUpdate = async (table: String, data: [any], options: UpdateOption
 // Options:
 // keyField: Primary ID field of table
 //
-export const dbInsert = async (table: String, data: [any], options: UpdateOptions) => {
+export const dbInsert = async (table, data, options) => {
     const { fieldList, preparedList } = await checkTable(table, data);
-    const  { keyField } = options;
+    const { keyField } = options;
     const insertList = [];
     const whereKey = data[keyField];
 
@@ -99,9 +88,9 @@ export const dbInsert = async (table: String, data: [any], options: UpdateOption
 
     // insert mysql query
     const sql = `INSERT INTO ${table} (${fieldList.join(", ")}) VALUES (${insertList.join(", ")});
-                SELECT * FROM ${table} WHERE ${keyField}=LAST_INSERT_ID();`;
+    SELECT * FROM ${table} WHERE ${keyField}='${whereKey}';`;
 
-    const [result] = await pool.query(sql,preparedList);
+    const [result] = await pool.query(sql, preparedList);
 
     return result;
 }

@@ -1,5 +1,5 @@
 import pool from "../../helpers/db.js";
-import { dbUpdate } from "../../utils/db.ts";
+import { dbUpdate } from "../../utils/db.js";
 import { getDay } from '../../utils/date.js';
 
 const getPJPDuration = async (req, res) => {
