@@ -9,6 +9,17 @@ const allowedLogical = (string) => {
     }
 }
 
+type UpdateOptions = {
+    logic?: "AND" | "OR";
+    wheres: {
+        fieldName?:String
+    };
+}
+
+type InsertOptions = {
+    keyField: STRING
+}
+
 const checkTable = async (table, data) => {
     const keyList = Object.keys(data);
 
@@ -46,7 +57,7 @@ const checkTable = async (table, data) => {
 //           field: "value",
 //        }
 //
-export const dbUpdate = async (table, data, options) => {
+export const dbUpdate = async (table: String, data: [any], options: UpdateOptions) => {
     const { setData, preparedList } = await checkTable(table, data);
     const {logic, wheres} = options;
     const logicalCondition = logic ? allowedLogical(logic) : "AND";
@@ -73,9 +84,9 @@ export const dbUpdate = async (table, data, options) => {
 };
 
 // Options:
-// keyField: Primary ID of table
+// keyField: Primary ID field of table
 //
-export const dbInsert = async (table, data, options) => {
+export const dbInsert = async (table: String, data: [any], options: UpdateOptions) => {
     const { fieldList, preparedList } = await checkTable(table, data);
     const  { keyField } = options;
     const insertList = [];
@@ -88,7 +99,7 @@ export const dbInsert = async (table, data, options) => {
 
     // insert mysql query
     const sql = `INSERT INTO ${table} (${fieldList.join(", ")}) VALUES (${insertList.join(", ")});
-                SELECT * FROM ${table} WHERE ${keyField}='${whereKey}';`;
+                SELECT * FROM ${table} WHERE ${keyField}=LAST_INSERT_ID();`;
 
     const [result] = await pool.query(sql,preparedList);
 
