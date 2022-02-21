@@ -2,7 +2,7 @@ import { getDay, getDate } from '../../utils/date.js';
 import { haversine } from '../../utils/haversine.js';
 import pool from "../../helpers/db.js";
 
-const getDayService = (req, res) => { 
+const getDayService = (req, res) => {
     const day = getDay(new Date());
     res.status(200).json({
         day
@@ -11,7 +11,7 @@ const getDayService = (req, res) => {
 
 const getOutletCheckInService = async (req, res) => {
     const { longitude, latitude } = req.query;
-    
+
     if (!longitude || !latitude) {
         res.status(400).json({
             message: "Missing required parameters"
@@ -32,6 +32,7 @@ const getOutletCheckInService = async (req, res) => {
             FROM
                 (
                 SELECT
+                    a.kategori,    
                     a.outlet_id,
                     a.urutan,
                     b.outlet AS nama_outlet,
@@ -86,12 +87,13 @@ const getOutletCheckInService = async (req, res) => {
                     SELECT isClosed,needConfirm,outlet_id FROM outlet_state WHERE date = DATE(NOW())
                 ) outletstate ON outlet_list.outlet_id = outletstate.outlet_id
                 ORDER BY outlet_list.urutan ASC`;
-    const params = [latitude, latitude, longitude, day, user.id,user.id,user.id];
+    const params = [latitude, latitude, longitude, day, user.id, user.id, user.id];
     const [results, metadata] = await pool.query(query, params);
     if (results.length > 0) {
         res.status(200).json({
             results: results.map(item => {
                 return {
+                    kategori: item.kategori,
                     urutan: item.urutan,
                     outlet_id: item.outlet_id,
                     nama_outlet: item.nama_outlet,
@@ -118,7 +120,7 @@ const outletCheckAction = async (req, res) => {
     const paramsFirst = [outlet_id, user.id, longitude, latitude];
     const allowedActions = ['in', 'out'];
     const day = getDay(new Date());
-    
+
     if (!allowedActions.includes(action)) res.status(400).json({ message: "Invalid action" });
     if (!outlet_id) res.status(400).json({ message: "Missing required parameters" });
 
@@ -155,12 +157,12 @@ const outletCheckAction = async (req, res) => {
             AND a.sf_id = ?
             AND DATE(b.created_at) = DATE(NOW())
             AND DATE( a.date ) = DATE(NOW())`;
-    
+
     try {
         const [results, metadata] = await pool.query(queryCheck, paramsFirst);
 
         if (results.length == 0) {
-            
+
             if (action == 'out') {
                 const queryCheckIn = `SELECT * FROM pjp_check_in WHERE outlet_id = ? AND sf_id = ? AND DATE( date ) = DATE(NOW())`;
                 const [resultsCheckIn, metadataCheckIn] = await pool.query(queryCheckIn, paramsFirst);
@@ -179,7 +181,7 @@ const outletCheckAction = async (req, res) => {
                                     sales_force_id = ? AND
                                     outlet_id = ?`;
             const [resultsCheck, metadataCheck] = await pool.query(checkPjpSchedule, [day, user.id, outlet_id]);
-            
+
             if (resultsCheck.length == 0) {
                 res.status(400).json({ message: "Outlet PJP is not on your schedule!" });
                 return;
@@ -216,7 +218,7 @@ const outletCheckAction = async (req, res) => {
                 return;
             }
 
-            
+
         } else {
             res.status(400).json({
                 checked: true,
@@ -229,7 +231,127 @@ const outletCheckAction = async (req, res) => {
             message: error.message
         });
     }
-    
+
+}
+
+const outletMochanCheckAction = async (req, res) => {
+    const { action, outlet_id, longitude, latitude, report_id } = req.body;
+    const { user } = req;
+    const paramsFirst = [outlet_id, user.id, longitude, latitude];
+    const allowedActions = ['in', 'out'];
+    const day = getDay(new Date());
+
+    if (!allowedActions.includes(action)) res.status(400).json({ message: "Invalid action" });
+    if (!outlet_id) res.status(400).json({ message: "Missing required parameters" });
+
+    const queryOutlet = `SELECT * FROM outlet WHERE outlet_id = ?`;
+    const [resultOutlet, metadata] = await pool.query(queryOutlet, [outlet_id]);
+
+    const distance = haversine(
+        {
+            lat: latitude,
+            lon: longitude
+        },
+        {
+            lat: resultOutlet[0].latitude,
+            lon: resultOutlet[0].longitude
+        });
+
+    if (distance > 30) {
+        res.status(400).json({ message: "Outlet is not in range" });
+        return;
+    }
+
+    const queryCheck = `
+            SELECT
+            b.id AS report_id,
+            a.created_at as check_${action}_time,
+            a.longitude as check_${action}_longitude,
+            a.latitude as check_${action}_latitude,
+            b.pjp_schedule_id
+            FROM pjp_check_${action} a
+            LEFT JOIN
+            pjp_report_mochan b
+            ON a.outlet_id = b.outlet_id
+            WHERE a.outlet_id = ?
+            AND a.sf_id = ?
+            AND DATE(b.created_at) = DATE(NOW())
+            AND DATE( a.date ) = DATE(NOW())`;
+
+    try {
+        const [results, metadata] = await pool.query(queryCheck, paramsFirst);
+
+        if (results.length == 0) {
+
+            if (action == 'out') {
+                const queryCheckIn = `SELECT * FROM pjp_check_in WHERE outlet_id = ? AND sf_id = ? AND DATE( date ) = DATE(NOW())`;
+                const [resultsCheckIn, metadataCheckIn] = await pool.query(queryCheckIn, paramsFirst);
+                if (resultsCheckIn.length == 0) {
+                    res.status(400).json({ message: "Check in not found" });
+                    return;
+                }
+            }
+
+            const insertQuery = `INSERT INTO pjp_check_${action} (outlet_id, sf_id, date, longitude, latitude, report_id) VALUES (?, ?, NOW(), ?, ?, ?);
+                                SELECT * FROM pjp_check_${action} WHERE id = LAST_INSERT_ID()`;
+            const checkPjpSchedule = `SELECT * FROM
+                                    pjp_schedule
+                                    WHERE
+                                    DAY = ? AND
+                                    sales_force_id = ? AND
+                                    outlet_id = ?`;
+            const [resultsCheck, metadataCheck] = await pool.query(checkPjpSchedule, [day, user.id, outlet_id]);
+
+            if (resultsCheck.length == 0) {
+                res.status(400).json({ message: "Outlet PJP is not on your schedule!" });
+                return;
+            }
+
+            if (action == 'in') {
+                const createPjpReportQuery = `INSERT INTO pjp_report_mochan (pjp_schedule_id,sf_id,outlet_id,longitude,latitude) VALUES (?, ?, ?, ?, ?);
+                                            SELECT * FROM pjp_report_mochan WHERE id = LAST_INSERT_ID()`;
+                const [createPjpReport, metadataCreatePjpReport] = await pool.query(createPjpReportQuery, [resultsCheck[0].id, user.id, outlet_id, longitude, latitude]);
+                console.log(createPjpReport[1][0]);
+                const params = [outlet_id, user.id, longitude, latitude, createPjpReport[1][0].id];
+                const [insertResult, insertMetadata] = await pool.query(insertQuery, params);
+                res.status(200).json({
+                    message: `Checked ${action} successfully!`,
+                    pjpReport: createPjpReport[1][0] ? createPjpReport[1][0] : null,
+                    check: insertResult[1][0] ? insertResult[1][0] : null,
+                });
+                return;
+            } else {
+                const checkInSQL = `SELECT * FROM
+                                    pjp_check_in
+                                    WHERE
+                                    outlet_id = ? AND
+                                    sf_id = ? AND
+                                    DATE(created_at) = DATE(NOW())`;
+                const paramsCheckIn = [outlet_id, user.id];
+                const [checkInResult, checkInMetadata] = await pool.query(checkInSQL, paramsCheckIn);
+                const params = [outlet_id, user.id, longitude, latitude, checkInResult[0].report_id];
+                const [insertResult, insertMetadata] = await pool.query(insertQuery, params);
+                res.status(200).json({
+                    message: `Checked ${action} successfully!`,
+                    check: insertResult[1][0] ? insertResult[1][0] : null,
+                });
+                return;
+            }
+
+
+        } else {
+            res.status(400).json({
+                checked: true,
+                message: `You have already checked ${action} today!`,
+                checkData: results[0]
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+
 }
 
 const outletStateAction = async (req, res) => {
@@ -238,7 +360,7 @@ const outletStateAction = async (req, res) => {
     const date = getDate(new Date());
 
     if (!outletId) res.status(400).json({ message: "Missing required parameters" });
-    
+
     const queryOutlet = `SELECT * FROM outlet_state WHERE outlet_id = ? AND date  = ?`;
     const [resultOutlet, metadata] = await pool.query(queryOutlet, [outletId, date]);
 
@@ -247,7 +369,7 @@ const outletStateAction = async (req, res) => {
         const needConfirmData = needConfirm ? 1 : 0;
         const insertQuery = `INSERT INTO outlet_state (outlet_id, date, isClosed, needConfirm) VALUES (?, ?, ?, ?);
                             SELECT * FROM outlet_state WHERE outlet_id = ? AND date = ?`;
-        const [insertResult, insertMetadata] = await pool.query(insertQuery, [outletId, date, isClosedData, needConfirmData,outletId, date]);
+        const [insertResult, insertMetadata] = await pool.query(insertQuery, [outletId, date, isClosedData, needConfirmData, outletId, date]);
         res.status(200).json({
             message: "Outlet state inserted successfully!",
             outlet: insertResult[1][0] ? insertResult[1][0] : null
@@ -277,5 +399,6 @@ export default {
     getDayService,
     getOutletCheckInService,
     outletCheckAction,
+    outletMochanCheckAction,
     outletStateAction,
 }

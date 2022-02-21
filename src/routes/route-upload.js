@@ -7,5 +7,6 @@ const router = express.Router();
 router.get('/', upload.indexPage);
 router.post('/', upload.doUpload);
 router.post('/:reportId', upload.uploadReport);
+router.post('/mochan/:reportId', upload.uploadReportMochan);
 
 export default router;

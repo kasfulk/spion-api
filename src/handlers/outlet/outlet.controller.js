@@ -19,6 +19,10 @@ const outletCheckAction = (req, res) => {
     outletService.outletCheckAction(req, res);
 };
 
+const outletMochanCheckAction = (req, res) => {
+    outletService.outletMochanCheckAction(req, res);
+};
+
 const outletStateAction = (req, res) => {
     outletService.outletStateAction(req, res);
 };
@@ -28,5 +32,6 @@ export default {
     getDayService,
     getOutletCheckInService,
     outletCheckAction,
+    outletMochanCheckAction,
     outletStateAction,
 };

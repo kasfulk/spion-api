@@ -3,7 +3,7 @@ import pool from '../../helpers/db.js';
 
 const indexPage = (req, res) => {
     res.send({
-      message: 'berhasil',
+        message: 'berhasil',
     });
 };
 
@@ -49,7 +49,7 @@ const uploadReport = (req, res) => {
         } else {
             const urlImage = String(req.file?.location).replace('itopkal.sgp1.digitaloceanspaces.com', 'itopkal.sgp1.cdn.digitaloceanspaces.com');
             const query = `UPDATE pjp_report SET ${field} = ? WHERE id = ?`;
-            const params = [ urlImage, reportId ];
+            const params = [urlImage, reportId];
             try {
                 const [result, metadata] = await pool.query(query, params);
             } catch (err) {
@@ -64,9 +64,45 @@ const uploadReport = (req, res) => {
         }
     });
 };
-                          
-export default { 
+
+const uploadReportMochan = (req, res) => {
+    const { field } = req.query;
+    const { reportId } = req.params;
+    const allowedField = [
+        "pjp_selfie_photo_link",
+        "pjp_competitor_photo_link"];
+    if (!allowedField.includes(field)) {
+        return res.status(400).send({
+            message: "Invalid field"
+        });
+    }
+
+    aws.upload(req, res, async (err) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send(err);
+        } else {
+            const urlImage = String(req.file?.location).replace('itopkal.sgp1.digitaloceanspaces.com', 'itopkal.sgp1.cdn.digitaloceanspaces.com');
+            const query = `UPDATE pjp_report_mochan SET ${field} = ? WHERE id = ?`;
+            const params = [urlImage, reportId];
+            try {
+                const [result, metadata] = await pool.query(query, params);
+            } catch (err) {
+                res.status(500).json(err);
+            }
+            res.send({
+                message: 'berhasil',
+                fileName: req.file?.originalname,
+                uploadedFileName: req.file?.key,
+                file: req.file,
+            })
+        }
+    });
+};
+
+export default {
     indexPage,
     doUpload,
     uploadReport,
+    uploadReportMochan
 };

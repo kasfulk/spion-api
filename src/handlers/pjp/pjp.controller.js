@@ -30,6 +30,10 @@ const updatePjpReport = async (req, res) => {
     pjpService.updatePjpReport(req, res);
 };
 
+const updatePjpReportMochan = async (req, res) => {
+    pjpService.updatePjpReportMochan(req, res);
+};
+
 const getListBrand = async (req, res) => {
     pjpService.getListBrand(req, res);
 };
@@ -70,6 +74,7 @@ export default {
     insertPhysicalStock,
     deletePhysicalStock,
     updatePjpReport,
+    updatePjpReportMochan,
     getPjpReport,
     getPjpBarcode,
     insertPjpBarcode,

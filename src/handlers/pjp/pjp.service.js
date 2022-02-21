@@ -286,6 +286,28 @@ const updatePjpReport = async (req, res) => {
     }
 }
 
+const updatePjpReportMochan = async (req, res) => {
+    const { user, body } = req;
+    const { reportId } = req.params;
+
+    console.log(body);
+
+    try {
+
+        const update = await dbUpdate('pjp_report_mochan', {
+            ...body,
+        }, {
+            wheres: {
+                id: reportId,
+                sf_id: user.id,
+            }
+        });
+        res.status(200).json(update);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+}
+
 const insertPjpReportStatus = async (req, res) => {
     const { outletId, pjp_schedule_id, status_branding, status_display, status_transaksi, status_promotion } = req.body;
 
@@ -393,6 +415,7 @@ export default {
     insertPhysicalStock,
     deletePhysicalStock,
     updatePjpReport,
+    updatePjpReportMochan,
     getPjpReport,
     insertPjpBarcode,
     deletePjpBarcode,

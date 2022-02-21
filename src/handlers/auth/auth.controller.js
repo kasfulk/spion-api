@@ -2,12 +2,16 @@ import authService from "./auth.service.js";
 
 const indexPage = (req, res) => {
     res.send({
-      message: 'berhasil',
+        message: 'berhasil',
     });
-  };
+};
 
 const login = (req, res) => {
-    authService.login( req, res);
+    authService.login(req, res);
+}
+
+const loginNew = (req, res) => {
+    authService.loginNew(req, res);
 }
 
 const checkPayload = (req, res) => {
@@ -27,9 +31,10 @@ const getUser = (req, res) => {
     authService.getUser(req, res);
 };
 
-export default { 
+export default {
     indexPage,
     login,
+    loginNew,
     checkPayload,
     getUser,
 };
