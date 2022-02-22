@@ -408,6 +408,48 @@ const insertPjpReportStatusEupPrice = async (req, res) => {
     }
 }
 
+const insertPjpReportReqUser = async (req, res) => {
+    const { outletId, pjp_schedule_id, sakti_combo_stock, sa_card_quotes, sa_card_stock, add_req_name, add_req_quotes, add_req_stock } = req.body;
+
+    try {
+        const query = `INSERT INTO pjp_report_req_user (
+            outlet_id, 
+            sf_id,
+            report_id, 
+            sakti_combo_stock, 
+            sa_card_quotes, 
+            sa_card_stock, 
+            add_req_name,
+            add_req_quotes,
+            add_req_stock
+            ) VALUES (
+            ?, 
+            ?, 
+            ?, 
+            ?, 
+            ?, 
+            ?, 
+            ?, 
+            ?, 
+            ?);`;
+        const params = [outletId, req.user.id, pjp_schedule_id, sakti_combo_stock, sa_card_quotes, sa_card_stock, add_req_name, add_req_quotes, add_req_stock];
+
+        const [result, metadata] = await pool.query(query, params);
+
+        if (result.affectedRows != 0) {
+            res.status(200).json({
+                'status': 201,
+                'message': 'Input Pjp Req User Success'
+            });
+        } else {
+            res.status(400).json();
+        }
+    }
+    catch (err) {
+        res.status(500).json(err);
+    }
+}
+
 export default {
     getPJPDuration,
     getPhysicalStock,
@@ -423,5 +465,6 @@ export default {
     getPjpBarcodeList,
     insertPjpReportStatus,
     getDataStatus,
-    insertPjpReportStatusEupPrice
+    insertPjpReportStatusEupPrice,
+    insertPjpReportReqUser
 }

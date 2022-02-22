@@ -17,9 +17,12 @@ router.post('/barcode', pjp.insertPjpBarcode);
 router.delete('/barcode/:sn', pjp.deletePjpBarcode);
 router.get('/barcode-list/:reportId', pjp.getPjpBarcodeList);
 
-// new-est
+// status
 router.post('/status', pjp.insertPjpReportStatus);
 router.get('/status/:tableName', pjp.getDataStatus);
 router.post('/status/eup/:tableName', pjp.insertPjpReportStatusEupPrice);
+
+// req user
+router.post('/req-user', pjp.insertPjpReportReqUser);
 
 export default router;

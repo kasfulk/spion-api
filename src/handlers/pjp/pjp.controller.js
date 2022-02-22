@@ -66,6 +66,10 @@ const insertPjpReportStatusEupPrice = async (req, res) => {
     pjpService.insertPjpReportStatusEupPrice(req, res);
 };
 
+const insertPjpReportReqUser = async (req, res) => {
+    pjpService.insertPjpReportReqUser(req, res);
+};
+
 export default {
     indexPage,
     getPJPDuration,
@@ -82,5 +86,6 @@ export default {
     getPjpBarcodeList,
     insertPjpReportStatus,
     getDataStatus,
-    insertPjpReportStatusEupPrice
+    insertPjpReportStatusEupPrice,
+    insertPjpReportReqUser
 };
