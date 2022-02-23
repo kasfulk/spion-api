@@ -294,6 +294,22 @@ const updatePjpReportMochan = async (req, res) => {
 
     try {
 
+        for (const key in body) {
+            switch (key) {
+                case 'pjp_status_branding_id':
+                    body['pjp_status_branding_id'] = Number(body['pjp_status_branding_id']);
+                    break;
+
+                case 'pjp_status_promo_id':
+                    body['pjp_status_promo_id'] = Number(body['pjp_status_promo_id']);
+                    break;
+
+                default:
+                    body[key] = body[key];
+                    break;
+            }
+        }
+
         const update = await dbUpdate('pjp_report_mochan', {
             ...body,
         }, {
