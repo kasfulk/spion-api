@@ -191,7 +191,6 @@ const outletCheckAction = async (req, res) => {
                 const createPjpReportQuery = `INSERT INTO pjp_report (pjp_schedule_id,sf_id,outlet_id,longitude,latitude) VALUES (?, ?, ?, ?, ?);
                                             SELECT * FROM pjp_report WHERE id = LAST_INSERT_ID()`;
                 const [createPjpReport, metadataCreatePjpReport] = await pool.query(createPjpReportQuery, [resultsCheck[0].id, user.id, outlet_id, longitude, latitude]);
-                console.log(createPjpReport[1][0]);
                 const params = [outlet_id, user.id, longitude, latitude, createPjpReport[1][0].id];
                 const [insertResult, insertMetadata] = await pool.query(insertQuery, params);
                 res.status(200).json({
@@ -311,7 +310,6 @@ const outletMochanCheckAction = async (req, res) => {
                 const createPjpReportQuery = `INSERT INTO pjp_report_mochan (pjp_schedule_id,sf_id,outlet_id,longitude,latitude) VALUES (?, ?, ?, ?, ?);
                                             SELECT * FROM pjp_report_mochan WHERE id = LAST_INSERT_ID()`;
                 const [createPjpReport, metadataCreatePjpReport] = await pool.query(createPjpReportQuery, [resultsCheck[0].id, user.id, outlet_id, longitude, latitude]);
-                console.log(createPjpReport[1][0]);
                 const params = [outlet_id, user.id, longitude, latitude, createPjpReport[1][0].id];
                 const [insertResult, insertMetadata] = await pool.query(insertQuery, params);
                 res.status(200).json({

@@ -236,8 +236,6 @@ const updatePjpReport = async (req, res) => {
     const { user, body } = req;
     const { reportId } = req.params;
 
-    console.log(body);
-
     try {
 
         for (const key in body) {
@@ -289,8 +287,6 @@ const updatePjpReport = async (req, res) => {
 const updatePjpReportMochan = async (req, res) => {
     const { user, body } = req;
     const { reportId } = req.params;
-
-    console.log(body);
 
     try {
 

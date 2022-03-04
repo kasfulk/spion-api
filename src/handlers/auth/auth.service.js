@@ -42,14 +42,6 @@ const login = async (req, res) => {
     }
 };
 
-
-// Akun ujicoba (nanti hapus)
-// {
-//     "username": "ujicoba",
-//     "password": "spion123",
-//     "version": "1.4.2"
-// }
-
 const loginNew = async (req, res) => {
     const { username, password, version } = req.body;
     const checkVersion = `SELECT version FROM latest_version`;
